@@ -1,6 +1,6 @@
-const PDFDocument = require('pdfkit-table');
+const PDFDocument = require('pdfkit');
 const fs = require('fs');
-const {print} = require('unix-print')
+const {print} = require('pdf-to-printer')
 var TwitterCldrLoader = require('twitter_cldr');
 const isHebrew = (text) => {
     return text.search(/[\u0590-\u05FF]/) >= 0;
@@ -48,15 +48,23 @@ async function generateReceipt(orderData) {
         size: [226.772, Math.max(280, requiredHeight+100)], // Dynamic height with minimum of 280
         margins: {
             top: 10,
-            bottom: 10,
-            left: 10,
-            right: 10
-        }
+            bottom: 0,
+            left: 0,
+            right: 0
+        },
+        compress: false,
+        pdfVersion: '1.4',
+        autoFirstPage: true,
+        layout: 'portrait'
     });
     doc.pipe(fs.createWriteStream('output.pdf'));
-    doc.font('NotoSansArabic-VariableFont_wdth,wght.ttf');
+    doc.font('NotoSansArabic-VariableFont_wdth,wght.ttf', {
+        subset: true,
+        fill: true
+    });
 
-    doc.fontSize(8);
+    doc.fontSize(9);
+    doc.lineGap(-2);
 
     
     
@@ -86,7 +94,10 @@ async function generateReceipt(orderData) {
             doc.text(text, startX + padding, startY, { 
                 width: columnWidths[i] - 2 * padding, 
                 align: 'right', 
-                features: ['rtla'] 
+                features: ['rtla'],
+                stroke: false,
+                fill: true,
+                renderingMode: 'fill'
             });
             doc.rect(startX, startY - 5, columnWidths[i], rowHeight).stroke();
             startX += columnWidths[i];
