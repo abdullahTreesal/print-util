@@ -39,13 +39,13 @@ async function generateReceipt(orderData) {
       ['$4.00', '1', 'كعك xl مرتب']
     ];
     // Calculate required page height based on data length
-    const rowHeights = 20;
-    const headerHeight = 30; // Space for header
-    const footerHeight = 30; // Space for total
+    const rowHeights = 30;
+    const headerHeight = 40;
+    const footerHeight = 40;
     const requiredHeight = (data.length * rowHeights) + headerHeight + footerHeight;
     
     const doc = new PDFDocument({
-        size: [226.772, Math.max(280, requiredHeight+100)], // Dynamic height with minimum of 280
+        size: [226.772, Math.max(280, requiredHeight+100)],
         margins: {
             top: 10,
             bottom: 0,
@@ -60,19 +60,20 @@ async function generateReceipt(orderData) {
     doc.pipe(fs.createWriteStream('output.pdf'));
     doc.font('NotoSansArabic-VariableFont_wdth,wght.ttf', {
         subset: true,
-        fill: true
+        fill: true,
+        weight: 900
     });
 
-    doc.fontSize(9);
+    doc.fontSize(13);
     doc.lineGap(-2);
 
     
     
     // Adjusted starting positions and dimensions
-    let startX = 20, startY = 30;
-    const columnWidths = [50, 40, 106.772]; // Adjusted to fit the new width (total = 196.772)
-    const rowHeight = 20; // Reduced row height
-    const padding = 4; // Reduced padding
+    let startX = 0, startY = 35;
+    const columnWidths = [60, 45, 101.772];
+    const rowHeight = 30;
+    const padding = 6;
     
     // Draw the table headers with borders
     headers.forEach((header, i) => {
@@ -89,7 +90,7 @@ async function generateReceipt(orderData) {
     
     // Draw the table rows with borders
     data.forEach(row => {
-        startX = 20;
+        startX = 0;
         row.forEach((text, i) => {
             doc.text(text, startX + padding, startY, { 
                 width: columnWidths[i] - 2 * padding, 
@@ -106,7 +107,7 @@ async function generateReceipt(orderData) {
     });
     
     // Adjusted total position
-    doc.text('Total: $12.00', 120, startY + 5);
+    doc.text('Total: $12.00', 120, startY + 10);
     
     doc.end();
     print('output.pdf')
