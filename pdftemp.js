@@ -110,7 +110,17 @@ async function generateReceipt(orderData) {
     doc.text('Total: $12.00', 120, startY + 10);
     
     doc.end();
-    print('output.pdf')
+    setTimeout(() => {
+        print('output.pdf', {
+            printer: 'thermal',
+            paperSize: '80mm x 297mm',
+            scale: '1.0', 
+            orientation: 'portrait',
+            monochrome: true,
+            silent: true,
+            copies: 1
+        })
+    }, 1000);
 }
 
 // Example order data
